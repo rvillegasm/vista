@@ -8,9 +8,21 @@ import (
 
 func TestSetupCmdCreatesFiles(t *testing.T) {
 	dir := t.TempDir()
-	cwd, _ := os.Getwd()
-	defer os.Chdir(cwd)
-	os.Chdir(dir)
+
+	cwd, err := os.Getwd()
+	if err != nil {
+		t.Fatalf("getwd: %v", err)
+	}
+
+	t.Cleanup(func() {
+		if err := os.Chdir(cwd); err != nil {
+			t.Fatalf("chdir back: %v", err)
+		}
+	})
+
+	if err := os.Chdir(dir); err != nil {
+		t.Fatalf("chdir into temp dir: %v", err)
+	}
 
 	if err := setupCmd.RunE(setupCmd, []string{}); err != nil {
 		t.Fatalf("setupCmd returned error: %v", err)
