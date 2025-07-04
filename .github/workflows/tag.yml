@@ -34,9 +34,10 @@ jobs:
 
       - name: Create and push tag
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_PAT: ${{ secrets.GH_PAT }}
         run: |
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
           git tag -a ${{ steps.compute_version.outputs.version }} -m "Release ${{ steps.compute_version.outputs.version }}"
-          git push origin ${{ steps.compute_version.outputs.version }} 
+          # Push using PAT so tag push triggers downstream workflows
+          git push https://x-access-token:${GH_PAT}@github.com/${{ github.repository }} ${{ steps.compute_version.outputs.version }} 
