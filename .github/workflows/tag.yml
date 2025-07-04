@@ -17,9 +17,20 @@ jobs:
         with:
           fetch-depth: 0
 
+      - name: Set up Go
+        uses: actions/setup-go@v4
+        with:
+          go-version-file: "go.mod"
+          cache: true
+
+      - name: Install svu (semantic version utility)
+        run: |
+          go install github.com/caarlos0/svu@latest
+          echo "${HOME}/go/bin" >> $GITHUB_PATH
+
       - name: Determine next version
-        id: version
-        uses: caarlos0/svu@v1
+        id: compute_version
+        run: echo "version=$(svu next)" >> "$GITHUB_OUTPUT"
 
       - name: Create and push tag
         env:
@@ -27,5 +38,5 @@ jobs:
         run: |
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
-          git tag -a ${{ steps.version.outputs.version }} -m "Release ${{ steps.version.outputs.version }}"
-          git push origin ${{ steps.version.outputs.version }} 
+          git tag -a ${{ steps.compute_version.outputs.version }} -m "Release ${{ steps.compute_version.outputs.version }}"
+          git push origin ${{ steps.compute_version.outputs.version }} 
