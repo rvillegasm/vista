@@ -26,8 +26,5 @@ archives:
 checksum:
   name_template: "checksums.txt"
 
-sbom:
-  enabled: true
-
 snapshot:
   name_template: "{{ .Tag }}-next" 
